@@ -1,4 +1,4 @@
-import { Collapse, Descriptions, Image } from 'antd';
+import { Collapse, Descriptions, Image, List } from 'antd';
 
 function TakeOffSimulationModeling() {
   const specItems = [
@@ -91,6 +91,104 @@ function TakeOffSimulationModeling() {
       children: '',
     },
   ];
+
+  const takeOffEquationOfMotionItems = [
+    {
+      key: '1',
+      label: 'Gaya Angkat (Lift)',
+      children: 'L = 0,5qSCL',
+    },
+    {
+      key: '2',
+      label: 'Gaya Hambat (Drag)',
+      children: 'D = 0,5qSCD',
+    },
+    {
+      key: '3',
+      label: 'Gaya Gesek Roda dan Runway(Friction)',
+      children: 'F_f = μf(qSCL − Wcos(Φ))',
+    },
+    {
+      key: '4',
+      label: 'Gaya akibat kemiringan Runway (Slope)',
+      children: 'F_s = Wsin(Φ)',
+    },
+    {
+      key: '5',
+      label: 'Percepatan di sumbu x',
+      children: 'a_x = (g/W) [T - μW - (C_D - μC_L)qS - Wsin(Φ)]',
+    },
+    {
+      key: '6',
+      label: 'Percepatan di sumbu z',
+      children: 'a_z = (L - Wcos(Φ))/m',
+    },
+  ];
+
+  const approachItems = [
+    '(a) Slope runway bernilai konstan sepanjang take-off.',
+    '(b) Kerapatan udara konstan selama take-off, karena screen height hanya terpisah 10,7 m dari runway.',
+    '(c) Koefisien friksi antara roda dan runway mengikuti koefisien friksi dari (ref. Boeing), yaitu: μ = 0,0165.',
+    '(d) V_1 = V_R = 1,05V_MC = 37,0 m/s, karena data V_1 dan V_R tidak tersedia.',
+    '(e) Balanced Field Length (BFL) = take-off run = 370 m, karena tidak ada data BFL secara spesifik tersedia.',
+    '(f) Jarak take-off ke screen height = 490 m.',
+    '(g) Sudut rotasi maksimal saat simulasi = 10 derajat',
+    '(h) Saat pengereman dilakukan, koefisien friksi menjadi μ = 0,38 (ref. Boeing).',
+    '(i) Saat all-engine inoperating, defleksi spoiler digambarkan dengan berubahnya nilai C_L dan C_D menjadi -0,73C_L dan 2,272C_D karena data tentang koefisien aerodinamika saat spoiler terdefleksi tidak tersedia.',
+  ];
+
+  const simulationCaseItems = [
+    {
+      key: '1',
+      label: 'All-engine operating tanpa rotasi',
+      children: '',
+    },
+    {
+      key: '2',
+      label: 'All-engine operating dengan rotasi 2 derajat/s',
+      children: '',
+    },
+    {
+      key: '3',
+      label: 'All-engine operating dengan rotasi 4 derajat/s',
+      children: '',
+    },
+    {
+      key: '4',
+      label: 'All-engine operating dengan kemiringan runway menanjak 2 derajat',
+      children: '',
+    },
+    {
+      key: '5',
+      label: 'All-engine operating dengan kemiringan runway menanjak 2 derajat',
+      children: '',
+    },
+    {
+      key: '6',
+      label: 'All-engine operating pada ketinggian 700 m',
+      children: '',
+    },
+    {
+      key: '7',
+      label: 'All-engine operating dengan angin dari depan 1,83 m/s',
+      children: '',
+    },
+    {
+      key: '8',
+      label: 'All-engine operating dengan setting Thrust 80%',
+      children: '',
+    },
+    {
+      key: '9',
+      label: 'One engine inoperating, Continue Take-off (CTO)',
+      children: '',
+    },
+    {
+      key: '10',
+      label: 'One engine inoperating, Abort Take-off (ATO)',
+      children: '',
+    },
+  ];
   
   const items = [
     {
@@ -107,7 +205,35 @@ function TakeOffSimulationModeling() {
           <Collapse items={aerodynamicItems} />
         </div>
       ),
-    }
+    },
+    {
+      key: '3',
+      label: 'Persamaan Gerak pada Take-off',
+      children: (
+        <div>
+          <Image
+            width={300}
+            src='./assets/free-body-diagram-take-off.png'
+          />
+          <Descriptions column={1} items={takeOffEquationOfMotionItems} />
+        </div>
+      ),
+    },
+    {
+      key: '3',
+      label: 'Pendekatan yang digunakan',
+      children: <List
+        size="small"
+        bordered
+        dataSource={approachItems}
+        renderItem={(item) => <List.Item>{item}</List.Item>}
+      />,
+    },
+    {
+      key: '4',
+      label: 'Kasus yang Disimulasikan',
+      children: <Collapse items={simulationCaseItems} />,
+    },
   ];
   
   const onChange = (key) => {
@@ -117,7 +243,7 @@ function TakeOffSimulationModeling() {
   return (
     <div>
       <Image
-        width={200}
+        width={300}
         src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Harbin_Y-12_%28II%29.jpg/1920px-Harbin_Y-12_%28II%29.jpg"
       />
       <h3>Harbin Y-12(IV)</h3>
