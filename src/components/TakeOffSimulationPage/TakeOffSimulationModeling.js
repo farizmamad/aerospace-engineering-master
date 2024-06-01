@@ -1,4 +1,5 @@
 import { Collapse, Descriptions, Image, List } from 'antd';
+import TakeOffSimulationCase from './TakeOffSimulationModeling/TakeOffSimulationCase';
 
 function TakeOffSimulationModeling() {
   const specItems = [
@@ -45,7 +46,7 @@ function TakeOffSimulationModeling() {
     {
       key: '9',
       label: 'Take-off Flap',
-      children: '15 derajat',
+      children: '15 deg',
     },
     {
       key: '10',
@@ -70,7 +71,7 @@ function TakeOffSimulationModeling() {
     {
       key: '14',
       label: 'Maximum Rotate',
-      children: '13 derajat',
+      children: '13 deg',
     },
   ];
 
@@ -132,62 +133,9 @@ function TakeOffSimulationModeling() {
     '(d) V_1 = V_R = 1,05V_MC = 37,0 m/s, karena data V_1 dan V_R tidak tersedia.',
     '(e) Balanced Field Length (BFL) = take-off run = 370 m, karena tidak ada data BFL secara spesifik tersedia.',
     '(f) Jarak take-off ke screen height = 490 m.',
-    '(g) Sudut rotasi maksimal saat simulasi = 10 derajat',
+    '(g) Sudut rotasi maksimal saat simulasi = 10 deg',
     '(h) Saat pengereman dilakukan, koefisien friksi menjadi μ = 0,38 (ref. Boeing).',
     '(i) Saat all-engine inoperating, defleksi spoiler digambarkan dengan berubahnya nilai C_L dan C_D menjadi -0,73C_L dan 2,272C_D karena data tentang koefisien aerodinamika saat spoiler terdefleksi tidak tersedia.',
-  ];
-
-  const simulationCaseItems = [
-    {
-      key: '1',
-      label: 'All-engine operating tanpa rotasi',
-      children: '',
-    },
-    {
-      key: '2',
-      label: 'All-engine operating dengan rotasi 2 derajat/s',
-      children: '',
-    },
-    {
-      key: '3',
-      label: 'All-engine operating dengan rotasi 4 derajat/s',
-      children: '',
-    },
-    {
-      key: '4',
-      label: 'All-engine operating dengan kemiringan runway menanjak 2 derajat',
-      children: '',
-    },
-    {
-      key: '5',
-      label: 'All-engine operating dengan kemiringan runway menanjak 2 derajat',
-      children: '',
-    },
-    {
-      key: '6',
-      label: 'All-engine operating pada ketinggian 700 m',
-      children: '',
-    },
-    {
-      key: '7',
-      label: 'All-engine operating dengan angin dari depan 1,83 m/s',
-      children: '',
-    },
-    {
-      key: '8',
-      label: 'All-engine operating dengan setting Thrust 80%',
-      children: '',
-    },
-    {
-      key: '9',
-      label: 'One engine inoperating, Continue Take-off (CTO)',
-      children: '',
-    },
-    {
-      key: '10',
-      label: 'One engine inoperating, Abort Take-off (ATO)',
-      children: '',
-    },
   ];
   
   const items = [
@@ -232,7 +180,7 @@ function TakeOffSimulationModeling() {
     {
       key: '4',
       label: 'Kasus yang Disimulasikan',
-      children: <Collapse items={simulationCaseItems} />,
+      children: <TakeOffSimulationCase />,
     },
   ];
   
