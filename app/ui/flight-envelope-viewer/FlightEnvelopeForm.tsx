@@ -1,12 +1,10 @@
 'use client'
 
-import { calculateFlightEnvelope, FlightEnvelopeState } from "@/app/lib/actions/flight-envelope-viewer";
-import { useActionState, WheelEvent } from "react"
+import { FlightEnvelopeState } from "@/app/lib/actions/flight-envelope-viewer";
+import { WheelEvent } from "react"
 import { Button } from "@/app/ui/button";
 
-export default function FlightEnvelopeForm() {
-  const initialState: FlightEnvelopeState = { message: null, errors: {} };
-  const [state, formAction] = useActionState(calculateFlightEnvelope, initialState);
+export default function FlightEnvelopeForm({ action, state }: { action: (payload: FormData) => void, state: FlightEnvelopeState }) {
 
   const numberInputOnWheelPreventChange = (e: WheelEvent<HTMLInputElement>) => {
     if (!e?.target) return;
@@ -22,7 +20,7 @@ export default function FlightEnvelopeForm() {
     setTimeout(() => {
       target.focus();
     }, 0)
-  }
+  };
 
   return (
     <>
@@ -52,7 +50,7 @@ export default function FlightEnvelopeForm() {
         Mach Number (M): Ratio of the aircraft's speed to the speed of sound, relevant at higher speeds.
         Flap Settings: Determines the configuration of lift surfaces (retracted or extended).
        */}
-      <form action={formAction}>
+      <form action={action}>
         <label htmlFor="weight" className="mb-2 block text-sm font-medium">
           Berat Pesawat <code>(W)</code>
         </label>
@@ -61,9 +59,10 @@ export default function FlightEnvelopeForm() {
           name="weight"
           type="number"
           placeholder="Masukkan dalam N"
-          className="peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
+          className="peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500 text-black"
           aria-describedby='weight-error'
           onWheel={numberInputOnWheelPreventChange}
+          defaultValue={70535} // B737 MTOW 70,535 kg
         />
         <div id="weight-error" aria-live="polite" aria-atomic="true">
           {state.errors?.weight &&
@@ -83,9 +82,10 @@ export default function FlightEnvelopeForm() {
           type="number"
           step="0.01"
           placeholder="Masukkan dalam m^2"
-          className="peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
+          className="peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500 text-black"
           aria-describedby='wing_area-error'
           onWheel={numberInputOnWheelPreventChange}
+          defaultValue={125} // B737 wing area 125 m^2
         />
         <div id="wing_area-error" aria-live="polite" aria-atomic="true">
           {state.errors?.wing_area &&
@@ -96,7 +96,7 @@ export default function FlightEnvelopeForm() {
             ))}
         </div>
 
-        <label htmlFor="cl_max" className="mb-2 block text-sm font-medium">
+        {/* <label htmlFor="cl_max" className="mb-2 block text-sm font-medium">
           Koefisien Gaya Angkat Maksimum <code>(Cl_max)</code>
         </label>
         <input
@@ -105,7 +105,7 @@ export default function FlightEnvelopeForm() {
           type="number"
           step="0.01"
           placeholder=""
-          className="peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
+          className="peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500 text-black"
           aria-describedby='cl_max-error'
           onWheel={numberInputOnWheelPreventChange}
         />
@@ -116,9 +116,9 @@ export default function FlightEnvelopeForm() {
                 {error}
               </p>
             ))}
-        </div>
+        </div> */}
 
-        <label htmlFor="altitude" className="mb-2 block text-sm font-medium">
+        {/* <label htmlFor="altitude" className="mb-2 block text-sm font-medium">
           Ketinggian <code>(h)</code>
         </label>
         <input
@@ -127,7 +127,7 @@ export default function FlightEnvelopeForm() {
           type="number"
           step="0.01"
           placeholder="Masukkan dalam m"
-          className="peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
+          className="peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500 text-black"
           aria-describedby='altitude-error'
           onWheel={numberInputOnWheelPreventChange}
         />
@@ -138,9 +138,9 @@ export default function FlightEnvelopeForm() {
                 {error}
               </p>
             ))}
-        </div>
+        </div> */}
 
-        <label htmlFor="thrust" className="mb-2 block text-sm font-medium">
+        {/* <label htmlFor="thrust" className="mb-2 block text-sm font-medium">
           Gaya Dorong <code>(T)</code>
         </label>
         <input
@@ -149,7 +149,7 @@ export default function FlightEnvelopeForm() {
           type="number"
           step="0.01"
           placeholder="Masukkan dalam N"
-          className="peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
+          className="peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500 text-black"
           aria-describedby='thrust-error'
           onWheel={numberInputOnWheelPreventChange}
         />
@@ -160,9 +160,9 @@ export default function FlightEnvelopeForm() {
                 {error}
               </p>
             ))}
-        </div>
+        </div> */}
 
-        <label htmlFor="cd" className="mb-2 block text-sm font-medium">
+        {/* <label htmlFor="cd" className="mb-2 block text-sm font-medium">
           Koefisien Gaya Hambat <code>(Cd)</code>
         </label>
         <input
@@ -171,7 +171,7 @@ export default function FlightEnvelopeForm() {
           type="number"
           step="0.01"
           placeholder=""
-          className="peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
+          className="peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500 text-black"
           aria-describedby='cd-error'
           onWheel={numberInputOnWheelPreventChange}
         />
@@ -182,31 +182,53 @@ export default function FlightEnvelopeForm() {
                 {error}
               </p>
             ))}
-        </div>
+        </div> */}
 
-        <label htmlFor="v_stall" className="mb-2 block text-sm font-medium">
-          Kecepatan Stall <code>(V_stall)</code>
+        <label htmlFor="v_stall_upper" className="mb-2 block text-sm font-medium">
+          Kecepatan Stall Cl positif<code>(v_stall_upper)</code>
         </label>
         <input
-          id="v_stall"
-          name="v_stall"
+          id="v_stall_upper"
+          name="v_stall_upper"
           type="number"
-          step="0.01"
           placeholder="Masukkan dalam m/s"
-          className="peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
-          aria-describedby='v_stall-error'
+          className="peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500 text-black"
+          aria-describedby='v_stall_upper-error'
           onWheel={numberInputOnWheelPreventChange}
+          defaultValue={23}
         />
-        <div id="v_stall-error" aria-live="polite" aria-atomic="true">
-          {state.errors?.v_stall &&
-            state.errors.v_stall.map((error: string) => (
+        <div id="v_stall_upper-error" aria-live="polite" aria-atomic="true">
+          {state.errors?.v_stall_upper &&
+            state.errors.v_stall_upper.map((error: string) => (
               <p className="mt-2 text-sm text-red-500" key={error}>
                 {error}
               </p>
             ))}
         </div>
 
-        <label htmlFor="aspect_ratio" className="mb-2 block text-sm font-medium">
+        <label htmlFor="v_stall_lower" className="mb-2 block text-sm font-medium">
+          Kecepatan Stall Cl negatif<code>(v_stall_lower)</code>
+        </label>
+        <input
+          id="v_stall_lower"
+          name="v_stall_lower"
+          type="number"
+          placeholder="Masukkan dalam m/s"
+          className="peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500 text-black"
+          aria-describedby='v_stall_lower-error'
+          onWheel={numberInputOnWheelPreventChange}
+          defaultValue={26}
+        />
+        <div id="v_stall_lower-error" aria-live="polite" aria-atomic="true">
+          {state.errors?.v_stall_lower &&
+            state.errors.v_stall_lower.map((error: string) => (
+              <p className="mt-2 text-sm text-red-500" key={error}>
+                {error}
+              </p>
+            ))}
+        </div>
+
+        {/* <label htmlFor="aspect_ratio" className="mb-2 block text-sm font-medium">
           Aspect Ratio <code>(AR)</code>
         </label>
         <input
@@ -215,7 +237,7 @@ export default function FlightEnvelopeForm() {
           type="number"
           step="0.01"
           placeholder="masukkan rasio wingspan/mean chord"
-          className="peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
+          className="peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500 text-black"
           aria-describedby='aspect_ratio-error'
           onWheel={numberInputOnWheelPreventChange}
         />
@@ -226,9 +248,9 @@ export default function FlightEnvelopeForm() {
                 {error}
               </p>
             ))}
-        </div>
+        </div> */}
 
-        <label htmlFor="mach_number" className="mb-2 block text-sm font-medium">
+        {/* <label htmlFor="mach_number" className="mb-2 block text-sm font-medium">
           Mach Number <code>(M)</code>
         </label>
         <input
@@ -237,7 +259,7 @@ export default function FlightEnvelopeForm() {
           type="number"
           step="0.01"
           placeholder="Rasio v/v_sound"
-          className="peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
+          className="peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500 text-black"
           aria-describedby='mach_number-error'
           onWheel={numberInputOnWheelPreventChange}
         />
@@ -248,9 +270,9 @@ export default function FlightEnvelopeForm() {
                 {error}
               </p>
             ))}
-        </div>
+        </div> */}
 
-        <label htmlFor="load_factor" className="mb-2 block text-sm font-medium">
+        {/* <label htmlFor="load_factor" className="mb-2 block text-sm font-medium">
           Load Factor <code>(n)</code>
         </label>
         <input
@@ -259,7 +281,7 @@ export default function FlightEnvelopeForm() {
           type="number"
           step="0.01"
           placeholder="rasio T/W"
-          className="peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
+          className="peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500 text-black"
           aria-describedby='load_factor-error'
           onWheel={numberInputOnWheelPreventChange}
         />
@@ -270,7 +292,7 @@ export default function FlightEnvelopeForm() {
                 {error}
               </p>
             ))}
-        </div>
+        </div> */}
 
         <label htmlFor="air_density" className="mb-2 block text-sm font-medium">
          Kerapatan udara <code>(⍴)</code>
@@ -281,9 +303,10 @@ export default function FlightEnvelopeForm() {
           type="number"
           step="0.01"
           placeholder="Masukkan dalam kg/m^3"
-          className="peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
+          className="peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500 text-black"
           aria-describedby='air_density-error'
           onWheel={numberInputOnWheelPreventChange}
+          defaultValue={1.225} // sea-level air density 1.225 kg/m^3
         />
         <div id="air_density-error" aria-live="polite" aria-atomic="true">
           {state.errors?.air_density &&

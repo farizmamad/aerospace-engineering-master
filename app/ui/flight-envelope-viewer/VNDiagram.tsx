@@ -1,3 +1,4 @@
+import { FlightEnvelopeState } from '@/app/lib/actions/flight-envelope-viewer';
 import dynamic from 'next/dynamic';
 
 const VNDiagramChart = dynamic(() => import('./VNDiagramChart'), { ssr: false });
@@ -315,46 +316,41 @@ const cd = [
   0.09437,
 ];
 
-export default function VNDiagram() {
-  
-  const velocities = [];
-  for (let i = 0; i < 220; i+=10) {
-    velocities.push(i);
+export default function VNDiagram({ state }: { state: FlightEnvelopeState }) {
+
+  const calculateLift = ({ air_density, velocity, wing_area, cl }: { air_density: number, velocity: number, wing_area: number, cl: number }) => {
+    return 0.5 * air_density * velocity * velocity * wing_area * cl;
+  };
+
+  const calculateLoadFactor = ({ lift, weight}: { lift: number, weight: number }) => {
+    return lift / weight;
   }
-
-  /**
-   * B737 specifications
-   * MTOW = 70535 kg
-   * S = 125 m^2
-   * rho = 1.225 kg/m^3
-   */
-
+  
+  if (state?.errors || !state?.data) return <></>;
+  
+  const {
+    air_density,
+    v_stall_lower,
+    v_stall_upper,
+    weight,
+    wing_area
+  } = state.data;
+  
   const data: { velocity: number, nMax?: number, nMin?: number }[] = [];
-
-  const maxLoadFactors = velocities.map(v => {
-    const maxLift = 0.5 * 1.225 * v * v * 125 * Math.max(...cl);
-    const nMax = maxLift / 70535;
-
-    const minLift = 0.5 * 1.225 * v * v * 125 * Math.min(...cl);
-    const nMin = minLift / 70535;
-
-    data.push({ velocity: v, nMax, nMin});
-  });
-
-//   const data = [
-//     { velocity: 0, nMax: 0, nMin: 0 },
-//     { velocity: 50, nMax: 0.5, nMin: -0.5 },
-//     { velocity: 80, nMax: 1.3, nMin: -1.5 },
-//     { velocity: 100, nMax: 2, nMin: -1.5 },
-//     { velocity: 130, nMax: 2, nMin: -1.5 },
-//     { velocity: 150, nMax: 2, nMin: -1.5 },
-//     { velocity: 180, nMax: 2, nMin: -1.5 },
-//     { velocity: 200 },
-// ];
+  
+  for (let v = 0; v < 220; v+=10) {
+    const maxLift = calculateLift({ air_density, velocity: v, wing_area, cl: Math.max(...cl) });
+    const nMax = calculateLoadFactor({ lift: maxLift, weight });
+  
+    const minLift = calculateLift({ air_density, velocity: v, wing_area, cl: Math.min(...cl) });
+    const nMin = calculateLoadFactor({ lift: minLift, weight });
+  
+    data.push({ velocity: v, nMax, nMin});  
+  }
 
   return (
     <>
-      <VNDiagramChart v_n={data} v_stall_upper={23} v_stall_lower={26} />
+      <VNDiagramChart v_n={data} v_stall_lower={v_stall_lower} v_stall_upper={v_stall_upper}  />
     </>
   )
 }

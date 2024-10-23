@@ -2,15 +2,13 @@
 
 import FlightEnvelopeForm from "@/app/ui/flight-envelope-viewer/FlightEnvelopeForm";
 import VNDiagram from "@/app/ui/flight-envelope-viewer/VNDiagram";
-import { useState } from "react";
+import { useActionState } from "react";
+import { calculateFlightEnvelope, FlightEnvelopeState } from "@/app/lib/actions/flight-envelope-viewer";
 
 export default function FlightEnvelope() {
-  const [v_a, setV_a] = useState(0);
-  const [v_stall, setV_stall] = useState(0);
-  const [v_max, setV_max] = useState(0);
-  const [n_limit, setN_limit] = useState(0);
-  const [n_max, setN_max] = useState(0);
-  const [n_min, setN_min] = useState(0);
+  /** Configure action */
+  const initialState: FlightEnvelopeState = { message: null, errors: {} };
+  const [state, formAction] = useActionState(calculateFlightEnvelope, initialState);
   
   return (
     <div className="items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
@@ -18,10 +16,10 @@ export default function FlightEnvelope() {
         Flight Envelope Viewer
       </h1>
       <div className="my-2">
-        <FlightEnvelopeForm />
+        <FlightEnvelopeForm action={formAction} state={state} />
       </div>
       <div className="my-2">
-        <VNDiagram />
+        {state.data && <VNDiagram state={state}/>}
       </div>
     </div>
   )
