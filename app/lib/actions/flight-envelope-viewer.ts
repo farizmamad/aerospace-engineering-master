@@ -1,20 +1,22 @@
 'user server'
 
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 
 export type FlightEnvelopeState = {
   errors?: {
-    weight?: number,
-    wing_area?: number,
-    cl_max?: number,
-    altitude?: number,
-    thrust?: number,
-    cd?: number,
-    v_stall?: number,
-    aspect_ratio?: number,
-    mach_number?: number,
-    load_factor?: number,
-    air_density?: number,
+    weight?: string[],
+    wing_area?: string[],
+    cl_max?: string[],
+    altitude?: string[],
+    thrust?: string[],
+    cd?: string[],
+    v_stall?: string[],
+    aspect_ratio?: string[],
+    mach_number?: string[],
+    load_factor?: string[],
+    air_density?: string[],
   };
   message: string | null;
 };
@@ -33,20 +35,8 @@ const FlightEnvelopeFormSchema = z.object({
   air_density: z.number(),
 });
 
-export async function updateOrder(id: string, formData: FormData) {
-  const {
-    weight,
-    wing_area,
-    cl_max,
-    altitude,
-    thrust,
-    cd,
-    v_stall,
-    aspect_ratio,
-    mach_number,
-    load_factor,
-    air_density,
-  } = FlightEnvelopeFormSchema.parse({
+export async function calculateFlightEnvelope(prevState: FlightEnvelopeState, formData: FormData) {
+  const validatedFields = FlightEnvelopeFormSchema.safeParse({
     weight: formData.get('weight'),
     wing_area: formData.get('wing_area'),
     cl_max: formData.get('cl_max'),
@@ -59,8 +49,30 @@ export async function updateOrder(id: string, formData: FormData) {
     load_factor: formData.get('load_factor'),
     air_density: formData.get('air_density'),
   });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Calculate Flight Envelope',
+    };
+  }
+
+  const {
+    weight,
+    wing_area,
+    cl_max,
+    altitude,
+    thrust,
+    cd,
+    v_stall,
+    aspect_ratio,
+    mach_number,
+    load_factor,
+    air_density,
+  } = validatedFields.data;
   
   try {
+    const vStall = Math.sqrt((2 * weight)/(air_density * wing_area * cl_max));
     /**
      * 1. Stall Speed (V_stall):
       Stall speed is the minimum speed at which the aircraft can maintain level flight without stalling. It is given by:
@@ -238,4 +250,7 @@ export async function updateOrder(id: string, formData: FormData) {
       message: 'Database Error: Failed to Update Invoice.',
     };
   }
+
+  revalidatePath('/dashboard/orders');
+  redirect('/dashboard/orders');
 }
