@@ -51,22 +51,22 @@ export default function FlightEnvelopeForm({ action, state }: { action: (payload
         Flap Settings: Determines the configuration of lift surfaces (retracted or extended).
        */}
       <form action={action}>
-        <label htmlFor="weight" className="mb-2 block text-sm font-medium">
+        <label htmlFor="mtow" className="mb-2 block text-sm font-medium">
           Berat Pesawat Maksimum pada Take-off <code>(MTOW)</code>
         </label>
         <input
-          id="weight"
-          name="weight"
+          id="mtow"
+          name="mtow"
           type="number"
           placeholder="Masukkan dalam N"
           className="peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500 text-black"
-          aria-describedby='weight-error'
+          aria-describedby='mtow-error'
           onWheel={numberInputOnWheelPreventChange}
           defaultValue={70535} // B737 MTOW 70,535 kg
         />
-        <div id="weight-error" aria-live="polite" aria-atomic="true">
-          {state.errors?.weight &&
-            state.errors.weight.map((error: string) => (
+        <div id="mtow-error" aria-live="polite" aria-atomic="true">
+          {state.errors?.MTOW &&
+            state.errors.MTOW.map((error: string) => (
               <p className="mt-2 text-sm text-red-500" key={error}>
                 {error}
               </p>

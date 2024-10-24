@@ -31,12 +31,15 @@ export default function VNDiagramChart({
     <YAxis domain={[-2, 3]} scale="linear" allowDataOverflow={true} />
     <Line type="linear" dataKey="nMax" stroke="#8884d8" />
     <Line type="linear" dataKey="nMin" stroke="#82ca9d" />
-    <ReferenceLine segment={[{ x: 0, y: n_max }, { x: v_d, y: n_max }]} stroke="red" label="n max" />
-    <ReferenceLine segment={[{ x: 0, y: n_min }, { x: v_d, y: n_min }]} stroke="red" label="n min" />
+    <ReferenceLine segment={[{ x: 0, y: 0 }, { x: v_d, y: 0 }]} stroke="black" />
+    <ReferenceLine segment={[{ x: 0, y: 1 }, { x: v_d, y: 1 }]} stroke="black" strokeDasharray="3 3" />
+    <ReferenceLine segment={[{ x: v_a, y: n_max }, { x: v_d, y: n_max }]} stroke="red" />
+    <ReferenceLine segment={[{ x: v_s, y: n_min }, { x: v_c, y: n_min }]} stroke="red" />
+    <ReferenceLine segment={[{ x: v_c, y: n_min }, { x: v_d, y: 0 }]} stroke="red" />
     <ReferenceLine segment={[{ x: v_s, y: 1 }, { x: v_s, y: -1 }]} stroke="red" label="v_s" />
     <ReferenceLine segment={[{ x: v_a, y: n_max }, { x: v_a, y: n_min }]} stroke="red" label="v_a" />
     <ReferenceLine segment={[{ x: v_c, y: n_max }, { x: v_c, y: n_min }]} stroke="red" label="v_c"  />
-    <ReferenceLine segment={[{ x: v_d, y: n_max }, { x: v_d, y: n_min }]} stroke="red" label="v_d"  />
+    <ReferenceLine segment={[{ x: v_d, y: n_max }, { x: v_d, y: 0 }]} stroke="red" label="v_d"  />
   </LineChart>
 
   )

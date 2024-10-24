@@ -301,6 +301,8 @@ const cd = [
 
 export default function VNDiagram({ state }: { state: FlightEnvelopeState }) {
 
+  const gravityAccel = 9.81; // m/s^2
+
   const calculateLift = ({ air_density, velocity, wing_area, cl }: { air_density: number, velocity: number, wing_area: number, cl: number }) => {
     return 0.5 * air_density * velocity * velocity * wing_area * cl;
   };
@@ -309,20 +311,23 @@ export default function VNDiagram({ state }: { state: FlightEnvelopeState }) {
     return MTOW * 2.205; // convert kilogram to pound
   };
 
-  const calculateMaxLift = ({ poundMTOW }: { poundMTOW: number }) => {
-    return 2.1 + (24000 / (poundMTOW + 1000));
+  const calculateLimitManeuveringLoadFactor = ({ poundMTOW }: { poundMTOW: number }) => {
+    const n = 2.1 + (24000 / (poundMTOW + 1000));
+    if (n > 3.8) return 3.8;
+    if (n < 2.5) return 2.5;
+    return n;
   };
 
-  const calculateMaxLoadFactor = ({ lift, weight}: { lift: number, weight: number }) => {
+  const calculateLoadFactor = ({ lift, weight}: { lift: number, weight: number }) => {
     return lift / weight;
   }
 
-  const calculateMinLoadFactor = ({ cl_max }: { cl_max: number }) => {
-    return -0.4 * cl_max;
+  const calculateMinLoadFactor = ({ n_max }: { n_max: number }) => {
+    return -0.4 * n_max;
   }
 
   const calculateStallSpeed = ({ MTOW, air_density, wing_area, cl_max }: { MTOW: number, air_density: number, wing_area: number, cl_max: number }) => {
-    return Math.sqrt((2 * MTOW * 9.81) / (air_density * wing_area * cl_max)); // m/s
+    return Math.sqrt((2 * MTOW * gravityAccel) / (air_density * wing_area * cl_max)); // m/s
   }
 
   const calculateCruiseSpeed = ({ poundMTOW }: { poundMTOW: number }) => {
@@ -334,23 +339,23 @@ export default function VNDiagram({ state }: { state: FlightEnvelopeState }) {
   const {
     air_density,
     cl_max,
-    weight,
+    MTOW,
     wing_area
   } = state.data;
   
   const data: { velocity: number, nMax?: number, nMin?: number }[] = [];
 
-  const poundMTOW = calculatePoundWeight({ MTOW: weight });
+  const poundMTOW = calculatePoundWeight({ MTOW: MTOW });
 
   /** equation is taken from airworthiness CS 23.337 Limit manoeuvring load factor pasal (a) paragraf (1). */
-  const maxPositiveLoadFactor = calculateMaxLift({ poundMTOW: poundMTOW });
-  const minNegativeLoadFactor = calculateMinLoadFactor({ cl_max: maxPositiveLoadFactor });
+  const maxPositiveLoadFactor = calculateLimitManeuveringLoadFactor({ poundMTOW: poundMTOW });
+  const minNegativeLoadFactor = calculateMinLoadFactor({ n_max: maxPositiveLoadFactor });
 
   /** 
    * v stall = sqrt((MTOW * gravity accel) / 0.5 * rho * S * Cl_max) 
    * Where Lift max = MTOW * gravity accel
    * */
-  const stallSpeed = calculateStallSpeed({ MTOW: weight, air_density, wing_area, cl_max }); // m/s
+  const stallSpeed = calculateStallSpeed({ MTOW, air_density, wing_area, cl_max }); // m/s
 
   /** cruise speed equation from airworthiness CS 23.335 Design airspeeds pasal (a) paragraf (1) poin I */
   const feetWingArea = 10.764 * wing_area;
@@ -364,10 +369,10 @@ export default function VNDiagram({ state }: { state: FlightEnvelopeState }) {
   
   for (let v = 0; v < 250; v+=10) {
     const maxLift = calculateLift({ air_density, velocity: v, wing_area, cl: cl_max });
-    const nMax = calculateMaxLoadFactor({ lift: maxLift, weight });
+    const nMax = calculateLoadFactor({ lift: maxLift, weight: MTOW * gravityAccel });
   
     const minLift = calculateLift({ air_density, velocity: v, wing_area, cl: -cl_max });
-    const nMin = calculateMaxLoadFactor({ lift: minLift, weight });
+    const nMin = calculateLoadFactor({ lift: minLift, weight: MTOW * gravityAccel });
   
     data.push({ velocity: v, nMax, nMin});  
   }

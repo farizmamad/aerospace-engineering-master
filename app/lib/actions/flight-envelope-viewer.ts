@@ -8,7 +8,7 @@ export type FlightEnvelopeState = {
     cl_max?: string[],
     v_stall_lower?: string[],
     v_stall_upper?: string[],
-    weight?: string[],
+    MTOW?: string[],
     wing_area?: string[],
   };
   message: string | null;
@@ -18,7 +18,7 @@ export type FlightEnvelopeState = {
     v_stall_lower: number,
     v_stall_upper: number,
     wing_area: number,
-    weight: number,
+    MTOW: number,
   };
 };
 
@@ -27,7 +27,7 @@ const FlightEnvelopeFormSchema = z.object({
   cl_max: z.coerce.number(),
   v_stall_lower: z.coerce.number(),
   v_stall_upper: z.coerce.number(),
-  weight: z.coerce.number(),
+  mtow: z.coerce.number(),
   wing_area: z.coerce.number(),
 });
 
@@ -37,7 +37,7 @@ export async function calculateFlightEnvelope(prevState: FlightEnvelopeState, fo
     cl_max: formData.get('cl_max'),
     v_stall_lower: formData.get('v_stall_lower'),
     v_stall_upper: formData.get('v_stall_upper'),
-    weight: formData.get('weight'),
+    mtow: formData.get('mtow'),
     wing_area: formData.get('wing_area'),
   });
 
@@ -53,7 +53,7 @@ export async function calculateFlightEnvelope(prevState: FlightEnvelopeState, fo
     cl_max,
     v_stall_lower,
     v_stall_upper,
-    weight,
+    mtow,
     wing_area,
   } = validatedFields.data;
   
@@ -64,7 +64,7 @@ export async function calculateFlightEnvelope(prevState: FlightEnvelopeState, fo
       cl_max,
       v_stall_lower,
       v_stall_upper,
-      weight,
+      MTOW: mtow,
       wing_area,
     },
   };
