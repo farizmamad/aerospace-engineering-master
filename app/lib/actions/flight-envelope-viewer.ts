@@ -5,6 +5,7 @@ import { z } from "zod";
 export type FlightEnvelopeState = {
   errors?: {
     air_density?: string[],
+    cl_max?: string[],
     v_stall_lower?: string[],
     v_stall_upper?: string[],
     weight?: string[],
@@ -13,6 +14,7 @@ export type FlightEnvelopeState = {
   message: string | null;
   data?: {
     air_density: number,
+    cl_max: number,
     v_stall_lower: number,
     v_stall_upper: number,
     wing_area: number,
@@ -21,20 +23,22 @@ export type FlightEnvelopeState = {
 };
 
 const FlightEnvelopeFormSchema = z.object({
-  weight: z.coerce.number(),
-  wing_area: z.coerce.number(),
+  air_density: z.coerce.number(),
+  cl_max: z.coerce.number(),
   v_stall_lower: z.coerce.number(),
   v_stall_upper: z.coerce.number(),
-  air_density: z.coerce.number(),
+  weight: z.coerce.number(),
+  wing_area: z.coerce.number(),
 });
 
 export async function calculateFlightEnvelope(prevState: FlightEnvelopeState, formData: FormData): Promise<FlightEnvelopeState> {
   const validatedFields = FlightEnvelopeFormSchema.safeParse({
-    weight: formData.get('weight'),
-    wing_area: formData.get('wing_area'),
+    air_density: formData.get('air_density'),
+    cl_max: formData.get('cl_max'),
     v_stall_lower: formData.get('v_stall_lower'),
     v_stall_upper: formData.get('v_stall_upper'),
-    air_density: formData.get('air_density'),
+    weight: formData.get('weight'),
+    wing_area: formData.get('wing_area'),
   });
 
   if (!validatedFields.success) {
@@ -46,6 +50,7 @@ export async function calculateFlightEnvelope(prevState: FlightEnvelopeState, fo
 
   const {
     air_density,
+    cl_max,
     v_stall_lower,
     v_stall_upper,
     weight,
@@ -56,6 +61,7 @@ export async function calculateFlightEnvelope(prevState: FlightEnvelopeState, fo
     message: 'successfully calculate flight envelope',
     data: {
       air_density,
+      cl_max,
       v_stall_lower,
       v_stall_upper,
       weight,

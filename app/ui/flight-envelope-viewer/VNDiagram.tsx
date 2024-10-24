@@ -3,23 +3,6 @@ import dynamic from 'next/dynamic';
 
 const VNDiagramChart = dynamic(() => import('./VNDiagramChart'), { ssr: false });
 
-export type VNDiagramProps = {
-  /** Maneuvering Speed */
-  v_a: number;
-  /** Maximum Speed */
-  v_max: number;
-  /** Stall Speed */
-  v_stall: number;
-  /** Limit load factor determined by aircraft structural design */
-  n_limit: number;
-  /** positive maximum load factor */
-  n_max: number;
-  /** negative minimum load factor */
-  n_min: number;
-
-  load_factors: number[];
-};
-
 const cl = [
   -1.064,
   -1.1027,
@@ -322,35 +305,84 @@ export default function VNDiagram({ state }: { state: FlightEnvelopeState }) {
     return 0.5 * air_density * velocity * velocity * wing_area * cl;
   };
 
-  const calculateLoadFactor = ({ lift, weight}: { lift: number, weight: number }) => {
+  const calculatePoundWeight = ({ MTOW }: { MTOW: number }) => {
+    return MTOW * 2.205; // convert kilogram to pound
+  };
+
+  const calculateMaxLift = ({ poundMTOW }: { poundMTOW: number }) => {
+    return 2.1 + (24000 / (poundMTOW + 1000));
+  };
+
+  const calculateMaxLoadFactor = ({ lift, weight}: { lift: number, weight: number }) => {
     return lift / weight;
   }
+
+  const calculateMinLoadFactor = ({ cl_max }: { cl_max: number }) => {
+    return -0.4 * cl_max;
+  }
+
+  const calculateStallSpeed = ({ MTOW, air_density, wing_area, cl_max }: { MTOW: number, air_density: number, wing_area: number, cl_max: number }) => {
+    return Math.sqrt((2 * MTOW * 9.81) / (air_density * wing_area * cl_max)); // m/s
+  }
+
+  const calculateCruiseSpeed = ({ poundMTOW }: { poundMTOW: number }) => {
+    return 33 * Math.sqrt(poundMTOW / feetWingArea); // knot
+  };
   
   if (state?.errors || !state?.data) return <></>;
   
   const {
     air_density,
-    v_stall_lower,
-    v_stall_upper,
+    cl_max,
     weight,
     wing_area
   } = state.data;
   
   const data: { velocity: number, nMax?: number, nMin?: number }[] = [];
+
+  const poundMTOW = calculatePoundWeight({ MTOW: weight });
+
+  /** equation is taken from airworthiness CS 23.337 Limit manoeuvring load factor pasal (a) paragraf (1). */
+  const maxPositiveLoadFactor = calculateMaxLift({ poundMTOW: poundMTOW });
+  const minNegativeLoadFactor = calculateMinLoadFactor({ cl_max: maxPositiveLoadFactor });
+
+  /** 
+   * v stall = sqrt((MTOW * gravity accel) / 0.5 * rho * S * Cl_max) 
+   * Where Lift max = MTOW * gravity accel
+   * */
+  const stallSpeed = calculateStallSpeed({ MTOW: weight, air_density, wing_area, cl_max }); // m/s
+
+  /** cruise speed equation from airworthiness CS 23.335 Design airspeeds pasal (a) paragraf (1) poin I */
+  const feetWingArea = 10.764 * wing_area;
+  const knotCruiseSpeed = calculateCruiseSpeed({ poundMTOW }); // knot
+  const cruiseSpeed = knotCruiseSpeed / 1.944; // m/s
+
+  /** dive speed equation from airworthiness CS 23.335 Design airspeeds pasal (b) paragraf (1) */
+  const diveSpeed = 1.25 * cruiseSpeed;
+
+  const maneuveringSpeed = stallSpeed * Math.sqrt(maxPositiveLoadFactor);
   
-  for (let v = 0; v < 220; v+=10) {
-    const maxLift = calculateLift({ air_density, velocity: v, wing_area, cl: Math.max(...cl) });
-    const nMax = calculateLoadFactor({ lift: maxLift, weight });
+  for (let v = 0; v < 250; v+=10) {
+    const maxLift = calculateLift({ air_density, velocity: v, wing_area, cl: cl_max });
+    const nMax = calculateMaxLoadFactor({ lift: maxLift, weight });
   
-    const minLift = calculateLift({ air_density, velocity: v, wing_area, cl: Math.min(...cl) });
-    const nMin = calculateLoadFactor({ lift: minLift, weight });
+    const minLift = calculateLift({ air_density, velocity: v, wing_area, cl: -cl_max });
+    const nMin = calculateMaxLoadFactor({ lift: minLift, weight });
   
     data.push({ velocity: v, nMax, nMin});  
   }
 
   return (
     <>
-      <VNDiagramChart v_n={data} v_stall_lower={v_stall_lower} v_stall_upper={v_stall_upper}  />
+      <VNDiagramChart
+        n_max={maxPositiveLoadFactor}
+        n_min={minNegativeLoadFactor}
+        v_a={maneuveringSpeed}
+        v_c={cruiseSpeed}
+        v_d={diveSpeed}
+        v_n={data}
+        v_s={stallSpeed}
+      />
     </>
   )
 }

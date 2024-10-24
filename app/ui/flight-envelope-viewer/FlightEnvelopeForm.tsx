@@ -52,7 +52,7 @@ export default function FlightEnvelopeForm({ action, state }: { action: (payload
        */}
       <form action={action}>
         <label htmlFor="weight" className="mb-2 block text-sm font-medium">
-          Berat Pesawat <code>(W)</code>
+          Berat Pesawat Maksimum pada Take-off <code>(MTOW)</code>
         </label>
         <input
           id="weight"
@@ -96,18 +96,18 @@ export default function FlightEnvelopeForm({ action, state }: { action: (payload
             ))}
         </div>
 
-        {/* <label htmlFor="cl_max" className="mb-2 block text-sm font-medium">
+        <label htmlFor="cl_max" className="mb-2 block text-sm font-medium">
           Koefisien Gaya Angkat Maksimum <code>(Cl_max)</code>
         </label>
         <input
           id="cl_max"
           name="cl_max"
-          type="number"
-          step="0.01"
-          placeholder=""
+          type="text"
+          placeholder="pisahkan setiap angka dengan koma"
           className="peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500 text-black"
           aria-describedby='cl_max-error'
           onWheel={numberInputOnWheelPreventChange}
+          defaultValue={1.571}
         />
         <div id="cl_max-error" aria-live="polite" aria-atomic="true">
           {state.errors?.cl_max &&
@@ -116,7 +116,7 @@ export default function FlightEnvelopeForm({ action, state }: { action: (payload
                 {error}
               </p>
             ))}
-        </div> */}
+        </div>
 
         {/* <label htmlFor="altitude" className="mb-2 block text-sm font-medium">
           Ketinggian <code>(h)</code>
@@ -183,50 +183,6 @@ export default function FlightEnvelopeForm({ action, state }: { action: (payload
               </p>
             ))}
         </div> */}
-
-        <label htmlFor="v_stall_upper" className="mb-2 block text-sm font-medium">
-          Kecepatan Stall Cl positif<code>(v_stall_upper)</code>
-        </label>
-        <input
-          id="v_stall_upper"
-          name="v_stall_upper"
-          type="number"
-          placeholder="Masukkan dalam m/s"
-          className="peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500 text-black"
-          aria-describedby='v_stall_upper-error'
-          onWheel={numberInputOnWheelPreventChange}
-          defaultValue={23}
-        />
-        <div id="v_stall_upper-error" aria-live="polite" aria-atomic="true">
-          {state.errors?.v_stall_upper &&
-            state.errors.v_stall_upper.map((error: string) => (
-              <p className="mt-2 text-sm text-red-500" key={error}>
-                {error}
-              </p>
-            ))}
-        </div>
-
-        <label htmlFor="v_stall_lower" className="mb-2 block text-sm font-medium">
-          Kecepatan Stall Cl negatif<code>(v_stall_lower)</code>
-        </label>
-        <input
-          id="v_stall_lower"
-          name="v_stall_lower"
-          type="number"
-          placeholder="Masukkan dalam m/s"
-          className="peer block w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500 text-black"
-          aria-describedby='v_stall_lower-error'
-          onWheel={numberInputOnWheelPreventChange}
-          defaultValue={26}
-        />
-        <div id="v_stall_lower-error" aria-live="polite" aria-atomic="true">
-          {state.errors?.v_stall_lower &&
-            state.errors.v_stall_lower.map((error: string) => (
-              <p className="mt-2 text-sm text-red-500" key={error}>
-                {error}
-              </p>
-            ))}
-        </div>
 
         {/* <label htmlFor="aspect_ratio" className="mb-2 block text-sm font-medium">
           Aspect Ratio <code>(AR)</code>
